@@ -3,18 +3,27 @@ syntax = "proto3";
 package ingridients;
 
 service IngridientsService {
-  rpc GetIngridientById (IngridientId) returns (Ingridient) {}
+  rpc ListIngridientsByRecipeId (RecipeId) returns (IngridientsList) {}
 }
 
-message IngridientId {
+message RecipeId {
   int32 id = 1;
+}
+
+message Recipe {
+  int32 id = 1;
+}
+
+message IngridientsList {
+  repeated Ingridient ingridients = 1;
 }
 
 message Ingridient {
   int32 id = 1;
   string name = 2;
   string portion = 3;
-  Nutrition nutrition = 4;
+  Recipe recipe = 4;
+  Nutrition nutrition = 5;
 }
 
 message Nutrition {

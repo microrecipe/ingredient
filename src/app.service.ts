@@ -2,7 +2,7 @@ import { Inject, Injectable } from '@nestjs/common';
 import { NotFoundException } from '@nestjs/common/exceptions';
 import { OnModuleInit } from '@nestjs/common/interfaces/hooks';
 import { ClientGrpc } from '@nestjs/microservices';
-import { Ingridient, NutritionsService } from './ingridients.interface';
+import { Ingridient, NutritionsService, Recipe } from './ingridients.interface';
 
 const Ingridients: Ingridient[] = [
   {
@@ -10,12 +10,14 @@ const Ingridients: Ingridient[] = [
     name: 'Chicken leg',
     portion: '1 piece',
     nutrition: null,
+    recipe: { id: 1 },
   },
   {
     id: 2,
     name: 'Vegetable oil',
     portion: '300ml',
     nutrition: null,
+    recipe: { id: 1 },
   },
 ];
 
@@ -33,21 +35,26 @@ export class AppService implements OnModuleInit {
       this.client.getService<NutritionsService>('NutritionsService');
   }
 
-  async getIngridientById(ingridient: Ingridient): Promise<Ingridient> {
-    const _ingridient = Ingridients.find((ing) => ing.id == ingridient.id);
+  async listIngridientsByRecipeId(recipe: Recipe): Promise<Ingridient[]> {
+    const _ingridient = Ingridients.filter((ing) => ing.recipe.id == recipe.id);
 
-    if (!_ingridient) {
+    if (!_ingridient || !_ingridient.length) {
       throw new NotFoundException('Ingridient not found');
     }
 
-    await this.nutritionsService
-      .getNutritionByIngridientId({
-        id: ingridient.id,
-      })
-      .forEach((value) => {
-        _ingridient.nutrition = value;
-      });
+    const ingridientsList: Ingridient[] = [];
 
-    return _ingridient;
+    for (const _ing of _ingridient) {
+      await this.nutritionsService
+        .getNutritionByIngridientId({
+          id: _ing.id,
+        })
+        .forEach((value) => {
+          _ing.nutrition = value;
+        });
+      ingridientsList.push(_ing);
+    }
+
+    return ingridientsList;
   }
 }
