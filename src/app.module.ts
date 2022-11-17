@@ -1,4 +1,5 @@
 import { Module } from '@nestjs/common';
+import { ConfigModule } from '@nestjs/config';
 import { Transport } from '@nestjs/microservices/enums';
 import { ClientsModule } from '@nestjs/microservices/module';
 import { join } from 'path';
@@ -7,6 +8,9 @@ import { AppService } from './app.service';
 
 @Module({
   imports: [
+    ConfigModule.forRoot({
+      isGlobal: true,
+    }),
     ClientsModule.register([
       {
         name: 'NUTRITIONS_PACKAGE',
@@ -14,7 +18,7 @@ import { AppService } from './app.service';
         options: {
           package: 'nutritions',
           protoPath: join(__dirname, '../src/nutritions.proto'),
-          url: 'localhost:3009',
+          url: `${process.env.NUTRITION_SVC}:${process.env.NUTRITION_GRPC_PORT}`,
         },
       },
     ]),

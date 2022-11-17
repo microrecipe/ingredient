@@ -8,22 +8,6 @@ import { AppModule } from './app.module';
 async function bootstrap() {
   const logger = new Logger('ingridients');
 
-  // const app = await NestFactory.createMicroservice<MicroserviceOptions>(
-  //   AppModule,
-  // {
-  //   transport: Transport.GRPC,
-  //   options: {
-  //     package: 'ingridients',
-  //     protoPath: join(__dirname, '../src/ingridients.proto'),
-  //     url: 'localhost:3008',
-  //   },
-  // },
-  // );
-
-  // await app.listen();
-
-  // logger.verbose(`ingridients microservice is listening...`);
-
   const app = await NestFactory.create(AppModule);
 
   app.connectMicroservice<MicroserviceOptions>({
@@ -31,16 +15,18 @@ async function bootstrap() {
     options: {
       package: 'ingridients',
       protoPath: join(__dirname, '../src/ingridients.proto'),
-      url: 'localhost:3008',
+      url: `${process.env.INGRIDIENTS_SVC}:${process.env.INGRIDIENTS_GRPC_PORT}`,
     },
   });
 
   await app.startAllMicroservices();
 
-  logger.verbose(`ingridients microservice grpc is listening...`);
+  logger.verbose(`ingridients microservice is listening...`);
 
-  await app.listen(3010);
+  await app.listen(process.env.INGRIDIENTS_REST_PORT);
 
-  logger.verbose(`ingridients microservice is listening on port: ${3010}`);
+  logger.verbose(
+    `ingridients service running on port: ${process.env.INGRIDIENTS_REST_PORT}`,
+  );
 }
 bootstrap();
