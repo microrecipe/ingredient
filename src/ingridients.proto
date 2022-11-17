@@ -1,0 +1,28 @@
+syntax = "proto3";
+
+package ingridients;
+
+service IngridientsService {
+  rpc GetIngridientById (IngridientId) returns (Ingridient) {}
+}
+
+message IngridientId {
+  int32 id = 1;
+}
+
+message Ingridient {
+  int32 id = 1;
+  string name = 2;
+  string portion = 3;
+  Nutrition nutrition = 4;
+}
+
+message Nutrition {
+  Ingridient ingridient = 1;
+  string calories = 2;
+  string fat = 3;
+  string sodium = 4;
+  string fiber = 5;
+  string sugar = 6;
+  string protein = 7;
+}
