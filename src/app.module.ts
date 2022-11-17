@@ -18,7 +18,7 @@ import { AppService } from './app.service';
         options: {
           package: 'nutritions',
           protoPath: join(__dirname, '../src/nutritions.proto'),
-          url: `${process.env.NUTRITION_SVC}:${process.env.NUTRITION_GRPC_PORT}`,
+          url: `${process.env.NUTRITION_HOST}:${process.env.NUTRITION_GRPC_PORT}`,
         },
       },
     ]),

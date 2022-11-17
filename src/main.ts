@@ -15,7 +15,7 @@ async function bootstrap() {
     options: {
       package: 'ingridients',
       protoPath: join(__dirname, '../src/ingridients.proto'),
-      url: `${process.env.INGRIDIENTS_SVC}:${process.env.INGRIDIENTS_GRPC_PORT}`,
+      url: `${process.env.INGRIDIENT_HOST}:${process.env.INGRIDIENT_GRPC_PORT}`,
     },
   });
 
@@ -23,10 +23,10 @@ async function bootstrap() {
 
   logger.verbose(`ingridients microservice is listening...`);
 
-  await app.listen(process.env.INGRIDIENTS_REST_PORT);
+  await app.listen(process.env.INGRIDIENT_REST_PORT);
 
   logger.verbose(
-    `ingridients service running on port: ${process.env.INGRIDIENTS_REST_PORT}`,
+    `ingridients service running on port: ${process.env.INGRIDIENT_REST_PORT}`,
   );
 }
 bootstrap();
