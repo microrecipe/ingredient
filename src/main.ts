@@ -6,7 +6,7 @@ import { join } from 'path';
 import { AppModule } from './app.module';
 
 async function bootstrap() {
-  const logger = new Logger('ingridients');
+  const logger = new Logger('Bootstrap');
 
   const app = await NestFactory.create(AppModule);
 
@@ -15,18 +15,20 @@ async function bootstrap() {
     options: {
       package: 'ingridients',
       protoPath: join(__dirname, '../src/ingridients.proto'),
-      url: `${process.env.INGRIDIENT_HOST}:${process.env.INGRIDIENT_GRPC_PORT}`,
+      url: `0.0.0.0:${process.env.INGRIDIENT_GRPC_PORT}`,
     },
   });
 
   await app.startAllMicroservices();
 
-  logger.verbose(`ingridients microservice is listening...`);
+  logger.log(
+    `gRPC service running on port: ${process.env.INGRIDIENT_GRPC_PORT}`,
+  );
 
   await app.listen(process.env.INGRIDIENT_REST_PORT);
 
-  logger.verbose(
-    `ingridients service running on port: ${process.env.INGRIDIENT_REST_PORT}`,
+  logger.log(
+    `HTTP service running on port: ${process.env.INGRIDIENT_REST_PORT}`,
   );
 }
 bootstrap();
