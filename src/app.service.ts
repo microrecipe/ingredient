@@ -38,13 +38,11 @@ export class AppService implements OnModuleInit {
     private nutritionTcpClient: ClientProxy,
   ) {}
 
-  async onModuleInit() {
+  onModuleInit() {
     this.nutritionsService =
       this.nutritionGrpcClient.getService<NutritionsService>(
         'NutritionsService',
       );
-
-    await this.nutritionTcpClient.connect();
   }
 
   async listIngridientsByRecipeId(
