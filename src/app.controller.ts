@@ -1,5 +1,5 @@
 import { Controller } from '@nestjs/common';
-import { GrpcMethod } from '@nestjs/microservices';
+import { GrpcMethod, MessagePattern } from '@nestjs/microservices';
 import { AppService } from './app.service';
 import { IngridientsList, Recipe } from './ingridients.interface';
 
@@ -10,9 +10,24 @@ export class AppController {
   @GrpcMethod('IngridientsService')
   async listIngridientsByRecipeId(recipe: Recipe): Promise<IngridientsList> {
     return {
-      ingridients: await this.service.listIngridientsByRecipeId({
-        id: recipe.id,
-      }),
+      ingridients: await this.service.listIngridientsByRecipeId(
+        {
+          id: recipe.id,
+        },
+        'GRPC',
+      ),
+    };
+  }
+
+  @MessagePattern('listIngridients')
+  async _listIngridientsByRecipeId(recipe: Recipe): Promise<IngridientsList> {
+    return {
+      ingridients: await this.service.listIngridientsByRecipeId(
+        {
+          id: recipe.id,
+        },
+        'TCP',
+      ),
     };
   }
 }

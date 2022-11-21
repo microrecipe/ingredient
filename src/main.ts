@@ -1,6 +1,10 @@
 import { Logger } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
-import { MicroserviceOptions } from '@nestjs/microservices';
+import {
+  GrpcOptions,
+  MicroserviceOptions,
+  TcpOptions,
+} from '@nestjs/microservices';
 import { Transport } from '@nestjs/microservices/enums';
 import { join } from 'path';
 import { AppModule } from './app.module';
@@ -10,7 +14,7 @@ async function bootstrap() {
 
   const app = await NestFactory.create(AppModule);
 
-  app.connectMicroservice<MicroserviceOptions>({
+  app.connectMicroservice<GrpcOptions>({
     transport: Transport.GRPC,
     options: {
       package: 'ingridients',
@@ -19,11 +23,21 @@ async function bootstrap() {
     },
   });
 
+  app.connectMicroservice<TcpOptions>({
+    transport: Transport.TCP,
+    options: {
+      host: '0.0.0.0',
+      port: Number(process.env.INGRIDIENT_TCP_PORT),
+    },
+  });
+
   await app.startAllMicroservices();
 
   logger.log(
     `gRPC service running on port: ${process.env.INGRIDIENT_GRPC_PORT}`,
   );
+
+  logger.log(`TCP service running on port: ${process.env.INGRIDIENT_TCP_PORT}`);
 
   await app.listen(process.env.INGRIDIENT_REST_PORT);
 
