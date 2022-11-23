@@ -2,30 +2,11 @@ import { Inject, Injectable } from '@nestjs/common';
 import { NotFoundException } from '@nestjs/common/exceptions';
 import { OnModuleInit } from '@nestjs/common/interfaces/hooks';
 import { ClientGrpc, ClientProxy } from '@nestjs/microservices';
-import {
-  Ingridient,
-  Nutrition,
-  NutritionsService,
-  Recipe,
-} from './ingridients.interface';
+import { InjectRepository } from '@nestjs/typeorm/dist';
+import { Repository } from 'typeorm';
+import { Ingridient } from './ingridient.entity';
+import { IRecipe, NutritionsService } from './ingridients.interface';
 import { ClientPackageNames } from './package-names.enum';
-
-const Ingridients: Ingridient[] = [
-  {
-    id: 1,
-    name: 'Chicken leg',
-    portion: '1 piece',
-    nutrition: null,
-    recipe: { id: 1 },
-  },
-  {
-    id: 2,
-    name: 'Vegetable oil',
-    portion: '300ml',
-    nutrition: null,
-    recipe: { id: 1 },
-  },
-];
 
 @Injectable()
 export class AppService implements OnModuleInit {
@@ -36,6 +17,8 @@ export class AppService implements OnModuleInit {
     private nutritionGrpcClient: ClientGrpc,
     @Inject(ClientPackageNames.nutritionTCP)
     private nutritionTcpClient: ClientProxy,
+    @InjectRepository(Ingridient)
+    private repository: Repository<Ingridient>,
   ) {}
 
   onModuleInit() {
@@ -45,11 +28,12 @@ export class AppService implements OnModuleInit {
       );
   }
 
-  async listIngridientsByRecipeId(
-    recipe: Recipe,
-    transportMethod?: 'GRPC' | 'TCP',
-  ): Promise<Ingridient[]> {
-    const _ingridient = Ingridients.filter((ing) => ing.recipe.id == recipe.id);
+  async listIngridientsByRecipeId(recipe: IRecipe): Promise<Ingridient[]> {
+    const _ingridient = await this.repository.find({
+      where: {
+        recipeId: recipe.id,
+      },
+    });
 
     if (!_ingridient || !_ingridient.length) {
       throw new NotFoundException('Ingridient not found');
@@ -57,35 +41,34 @@ export class AppService implements OnModuleInit {
 
     const ingridientsList: Ingridient[] = [];
 
-    switch (transportMethod) {
-      case 'GRPC': {
-        for (const _ing of _ingridient) {
-          await this.nutritionsService
-            .getNutritionByIngridientId({
-              id: _ing.id,
-            })
-            .forEach((value) => {
-              _ing.nutrition = value;
-            });
-          ingridientsList.push(_ing);
-        }
-        break;
-      }
-      case 'TCP': {
-        for (const _ing of _ingridient) {
-          await this.nutritionTcpClient
-            .send<Nutrition, Ingridient>('getNutrition', {
-              id: _ing.id,
-            })
-            .forEach((value) => {
-              _ing.nutrition = value;
-            });
-          ingridientsList.push(_ing);
-        }
-        break;
-      }
-      default:
-        break;
+    for (const _ing of _ingridient) {
+      await this.nutritionsService
+        .getNutritionByIngridientId({
+          id: _ing.id,
+        })
+        .forEach((value) => {
+          _ing.nutritions = value.nutritions;
+        });
+      ingridientsList.push(_ing);
+    }
+
+    return ingridientsList;
+  }
+
+  async listIngridients(): Promise<Ingridient[]> {
+    const ingridients = await this.repository.find();
+
+    const ingridientsList: Ingridient[] = [];
+
+    for (const _ing of ingridients) {
+      await this.nutritionsService
+        .getNutritionByIngridientId({
+          id: _ing.id,
+        })
+        .forEach((value) => {
+          _ing.nutritions = value.nutritions;
+        });
+      ingridientsList.push(_ing);
     }
 
     return ingridientsList;

@@ -1,33 +1,41 @@
 import { Observable } from 'rxjs';
 
-export interface Recipe {
+export interface IRecipe {
   id?: number;
   name?: string;
-  ingridients?: Ingridient[];
+  ingridients?: IIngridient[];
 }
 
-export interface Ingridient {
+export interface IIngridient {
   id?: number;
   name?: string;
   portion?: string;
-  recipe?: Recipe;
-  nutrition?: Nutrition;
+  nutritions?: INutrition;
 }
 
-export interface Nutrition {
-  ingridient?: Ingridient;
-  calories?: string;
-  fat?: string;
-  sodium?: string;
-  fiber?: string;
-  sugar?: string;
-  protein?: string;
+export interface INutrition {
+  id?: number;
+  name?: string;
+  per_gram?: string;
+  ingridient_id?: number;
 }
 
 export interface IngridientsList {
-  ingridients: Ingridient[];
+  ingridients: IIngridient[];
+}
+
+export interface NutritionsList {
+  nutritions?: INutrition[];
+}
+
+export interface EditNutrition {
+  id?: number;
+  per_gram?: string;
+  ingridient_id?: number;
 }
 
 export interface NutritionsService {
-  getNutritionByIngridientId(ingridient: Ingridient): Observable<Nutrition>;
+  getNutritionByIngridientId(
+    ingridient: IIngridient,
+  ): Observable<NutritionsList>;
 }
