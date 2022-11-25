@@ -3,9 +3,18 @@ import { NotFoundException } from '@nestjs/common/exceptions';
 import { OnModuleInit } from '@nestjs/common/interfaces/hooks';
 import { ClientGrpc, ClientProxy } from '@nestjs/microservices';
 import { InjectRepository } from '@nestjs/typeorm/dist';
-import { Repository } from 'typeorm';
+import { In, Repository } from 'typeorm';
 import { Ingridient } from './ingridient.entity';
-import { IRecipe, NutritionsService } from './ingridients.interface';
+import { IngridientRecipe } from './ingridients-nutritions.entity';
+import { IngridientsDTO } from './ingridients.dto';
+import {
+  AddIngridient,
+  IIngridient,
+  INutrition,
+  NutritionsService,
+  SetIngridient,
+  SetIngridientRes,
+} from './ingridients.interface';
 import { ClientPackageNames } from './package-names.enum';
 
 @Injectable()
@@ -18,7 +27,9 @@ export class AppService implements OnModuleInit {
     @Inject(ClientPackageNames.nutritionTCP)
     private nutritionTcpClient: ClientProxy,
     @InjectRepository(Ingridient)
-    private repository: Repository<Ingridient>,
+    private ingridientsRepository: Repository<Ingridient>,
+    @InjectRepository(IngridientRecipe)
+    private ingridientsRecipesRepository: Repository<IngridientRecipe>,
   ) {}
 
   onModuleInit() {
@@ -28,49 +39,141 @@ export class AppService implements OnModuleInit {
       );
   }
 
-  async listIngridientsByRecipeId(recipe: IRecipe): Promise<Ingridient[]> {
-    const _ingridient = await this.repository.find({
+  async listIngridientsByRecipeId(recipeId: number): Promise<IIngridient[]> {
+    const ingridientsRecipes = await this.ingridientsRecipesRepository.find({
       where: {
-        recipeId: recipe.id,
+        recipeId,
       },
     });
 
-    if (!_ingridient || !_ingridient.length) {
-      throw new NotFoundException('Ingridient not found');
-    }
+    const ingridients = await this.ingridientsRepository.find({
+      where: {
+        id: In(
+          ingridientsRecipes.map(
+            (ingridientRecipe) => ingridientRecipe.ingridient?.id,
+          ),
+        ),
+      },
+    });
 
-    const ingridientsList: Ingridient[] = [];
+    const ingridientsList: IIngridient[] = [];
 
-    for (const _ing of _ingridient) {
+    for (const ingridient of ingridients) {
       await this.nutritionsService
-        .getNutritionByIngridientId({
-          id: _ing.id,
+        .listNutritionsByIngridientId({
+          id: ingridient.id,
         })
         .forEach((value) => {
-          _ing.nutritions = value.nutritions;
+          ingridientsList.push({
+            ...ingridient,
+            recipeId,
+            portion: ingridientsRecipes.find(
+              (ingridientRecipe) =>
+                ingridient.id === ingridientRecipe.ingridient.id,
+            ).portion,
+            nutritions: value.nutritions,
+          });
         });
-      ingridientsList.push(_ing);
     }
 
     return ingridientsList;
   }
 
-  async listIngridients(): Promise<Ingridient[]> {
-    const ingridients = await this.repository.find();
+  async listIngridients(): Promise<IngridientsDTO[]> {
+    const ingridients = await this.ingridientsRepository.find();
 
-    const ingridientsList: Ingridient[] = [];
+    const ingridientsList: IIngridient[] = [];
 
-    for (const _ing of ingridients) {
+    for (const ingridient of ingridients) {
       await this.nutritionsService
-        .getNutritionByIngridientId({
-          id: _ing.id,
+        .listNutritionsByIngridientId({
+          id: ingridient.id,
         })
         .forEach((value) => {
-          _ing.nutritions = value.nutritions;
+          ingridientsList.push({ ...ingridient, nutritions: value.nutritions });
         });
-      ingridientsList.push(_ing);
     }
 
-    return ingridientsList;
+    return ingridientsList.map((ingridient) =>
+      IngridientsDTO.toDTO(ingridient),
+    );
+  }
+
+  async addIngridient(data: AddIngridient): Promise<IngridientsDTO> {
+    for (const nutrition of data.nutritions) {
+      await this.nutritionsService
+        .getNutritionById({ id: nutrition.id })
+        .forEach((val) => {
+          if (!val) {
+            throw new NotFoundException('Nutrition not found');
+          }
+        });
+    }
+
+    const ingridient = this.ingridientsRepository.create({
+      name: data.name,
+    });
+
+    await this.ingridientsRepository.save(ingridient);
+
+    const _nutritions: INutrition[] = [];
+
+    for (const nutrition of data.nutritions) {
+      await this.nutritionsService
+        .setNutritionToIngridient({
+          id: nutrition.id,
+          perGram: nutrition.perGram,
+          ingridientId: ingridient.id,
+        })
+        .forEach((val) => {
+          _nutritions.push(val);
+        });
+    }
+
+    return IngridientsDTO.toDTO({ ...ingridient, nutritions: _nutritions });
+  }
+
+  async getIngridientById(id: number): Promise<IIngridient> {
+    return await this.ingridientsRepository.findOne({
+      where: {
+        id,
+      },
+    });
+  }
+
+  async setIngridientToRecipe(data: SetIngridient): Promise<SetIngridientRes> {
+    const ingridient = await this.ingridientsRepository.findOne({
+      where: {
+        id: data.id,
+      },
+    });
+
+    if (!ingridient) {
+      throw new NotFoundException('Ingridient not found');
+    }
+
+    const ingridientRecipe = this.ingridientsRecipesRepository.create({
+      portion: data.portion,
+      recipeId: data.recipeId,
+      ingridient,
+    });
+
+    await this.ingridientsRecipesRepository.save(ingridientRecipe);
+
+    let nutritions;
+
+    await this.nutritionsService
+      .listNutritionsByIngridientId({
+        id: ingridient.id,
+      })
+      .forEach((value) => {
+        nutritions = value.nutritions;
+      });
+
+    return {
+      ...ingridient,
+      portion: data.portion,
+      nutritions,
+    };
   }
 }

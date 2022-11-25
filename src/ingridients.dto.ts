@@ -1,33 +1,45 @@
-import { Ingridient } from './ingridient.entity';
-import { INutrition } from './ingridients.interface';
+import { IIngridient, INutrition } from './ingridients.interface';
 
-export class IngridientsDTO {
-  static toDTO(ingridient: Ingridient) {
-    const res = new IngridientsDTO();
+export class NutritionsDTO {
+  static toDTO(nutrition: INutrition) {
+    const res = new NutritionsDTO();
 
-    res.id = ingridient.id;
-    res.name = ingridient.name;
-    res.portion = ingridient.portion;
-    res.nutrition = ingridient.nutritions || [];
+    res.id = nutrition.id;
+    res.name = nutrition.name;
+    res.per_gram = nutrition.perGram;
 
     return res;
   }
 
   id: number;
   name: string;
-  portion: string;
-  nutrition: INutrition[];
+  per_gram: string;
 }
 
-export class ListIngridientsDTO {
-  static toDTO(ingridients: Ingridient[]) {
-    const res = new ListIngridientsDTO();
+export class NutritionBody {
+  id: number;
+  per_gram: string;
+}
 
-    res.ingridients = ingridients.map((ingridient) =>
-      IngridientsDTO.toDTO(ingridient),
-    );
+export class AddIngridientBody {
+  name: string;
+  nutritions: NutritionBody[];
+}
+
+export class IngridientsDTO {
+  static toDTO(ingridient: IIngridient) {
+    const res = new IngridientsDTO();
+
+    res.id = ingridient.id;
+    res.name = ingridient.name;
+    res.nutritions = ingridient.nutritions
+      ? ingridient.nutritions.map((nutrition) => NutritionsDTO.toDTO(nutrition))
+      : [];
 
     return res;
   }
-  ingridients: IngridientsDTO[];
+
+  id: number;
+  name: string;
+  nutritions: NutritionsDTO[];
 }

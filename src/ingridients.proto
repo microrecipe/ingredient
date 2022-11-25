@@ -3,35 +3,46 @@ syntax = "proto3";
 package ingridients;
 
 service IngridientsService {
-  rpc ListIngridientsByRecipeId (RecipeId) returns (IngridientsList) {}
+  rpc ListIngridientsByRecipeId (RecipeId) returns (ListIngridientsRes) {}
+  rpc GetIngridientById (IngridientId) returns (Ingridient) {}
+  rpc SetIngridientToRecipe (SetIngridient) returns (SetIngridientRes) {}
+}
+
+message IngridientId {
+  int32 id = 1;
 }
 
 message RecipeId {
   int32 id = 1;
 }
 
-message Recipe {
+message Nutrition {
   int32 id = 1;
-}
-
-message IngridientsList {
-  repeated Ingridient ingridients = 1;
+  string name = 2;
+  string per_gram = 3;
+  int32 ingridient_id = 4;
 }
 
 message Ingridient {
   int32 id = 1;
   string name = 2;
   string portion = 3;
-  Recipe recipe = 4;
-  Nutrition nutrition = 5;
+  repeated Nutrition nutritions = 4;
 }
 
-message Nutrition {
-  Ingridient ingridient = 1;
-  string calories = 2;
-  string fat = 3;
-  string sodium = 4;
-  string fiber = 5;
-  string sugar = 6;
-  string protein = 7;
+message SetIngridient {
+  int32 id = 1;
+  string portion = 2;
+  int32 recipe_id = 3;
+}
+
+message SetIngridientRes {
+  int32 id = 1;
+  string name = 2;
+  string portion = 3;
+  repeated Nutrition nutritions = 4;
+}
+
+message ListIngridientsRes {
+  repeated Ingridient ingridients = 1;
 }

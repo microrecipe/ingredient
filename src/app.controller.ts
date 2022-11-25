@@ -1,15 +1,26 @@
-import { Controller, Get } from '@nestjs/common';
-import { GrpcMethod, MessagePattern } from '@nestjs/microservices';
+import { Controller, Get, Body, Post } from '@nestjs/common';
 import { AppService } from './app.service';
-import { ListIngridientsDTO } from './ingridients.dto';
-import { IngridientsList, IRecipe } from './ingridients.interface';
+import { AddIngridientBody, IngridientsDTO } from './ingridients.dto';
 
 @Controller()
 export class AppController {
   constructor(private readonly service: AppService) {}
 
   @Get('ingridients')
-  async listIngridients(): Promise<ListIngridientsDTO> {
-    return ListIngridientsDTO.toDTO(await this.service.listIngridients());
+  async listIngridients(): Promise<IngridientsDTO[]> {
+    return await this.service.listIngridients();
+  }
+
+  @Post('ingridients')
+  async addIngridient(
+    @Body() body: AddIngridientBody,
+  ): Promise<IngridientsDTO> {
+    return await this.service.addIngridient({
+      name: body.name,
+      nutritions: body.nutritions.map((nutrition) => ({
+        id: nutrition.id,
+        perGram: nutrition.per_gram,
+      })),
+    });
   }
 }
