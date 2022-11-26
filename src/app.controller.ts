@@ -1,6 +1,9 @@
 import { Controller, Get, Body, Post } from '@nestjs/common';
+import { Delete, Param } from '@nestjs/common/decorators';
+import { EventPattern, Payload } from '@nestjs/microservices';
 import { AppService } from './app.service';
 import { AddIngridientBody, IngridientsDTO } from './ingridients.dto';
+import { HandleDeleteRecipePayload } from './ingridients.interface';
 
 @Controller()
 export class AppController {
@@ -22,5 +25,15 @@ export class AppController {
         perGram: nutrition.per_gram,
       })),
     });
+  }
+
+  @Delete('ingridients/:id')
+  async deleteIngridient(@Param('id') id: number) {}
+
+  @EventPattern('recipe.delete')
+  async handleDeleteRecipe(
+    @Payload() message: HandleDeleteRecipePayload,
+  ): Promise<void> {
+    return await this.service.handleDeleteRecipe(Number(message.recipe_id));
   }
 }

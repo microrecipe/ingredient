@@ -34,6 +34,19 @@ import { ClientPackageNames } from './package-names.enum';
           port: Number(process.env.NUTRITION_TCP_PORT),
         },
       },
+      {
+        name: ClientPackageNames.ingridientDeleteTopic,
+        transport: Transport.KAFKA,
+        options: {
+          client: {
+            clientId: 'microrecipe',
+            brokers: ['broker:29092'],
+          },
+          consumer: {
+            groupId: 'ingridient',
+          },
+        },
+      },
     ]),
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],

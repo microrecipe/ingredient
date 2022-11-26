@@ -1,10 +1,6 @@
 import { Logger } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
-import {
-  GrpcOptions,
-  MicroserviceOptions,
-  TcpOptions,
-} from '@nestjs/microservices';
+import { GrpcOptions, KafkaOptions, TcpOptions } from '@nestjs/microservices';
 import { Transport } from '@nestjs/microservices/enums';
 import { join } from 'path';
 import { AppModule } from './app.module';
@@ -30,6 +26,20 @@ async function bootstrap() {
       port: Number(process.env.INGRIDIENT_TCP_PORT),
     },
   });
+
+  app.connectMicroservice<KafkaOptions>({
+    transport: Transport.KAFKA,
+    options: {
+      client: {
+        brokers: ['broker:29092'],
+      },
+      consumer: {
+        groupId: 'ingridient',
+      },
+    },
+  });
+
+  app.enableShutdownHooks();
 
   await app.startAllMicroservices();
 

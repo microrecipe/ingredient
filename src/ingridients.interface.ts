@@ -78,3 +78,7 @@ export interface NutritionsService {
 
   getNutritionById(nutrition: GetNutrition): Observable<INutrition>;
 }
+
+export interface HandleDeleteRecipePayload {
+  recipe_id: string;
+}
