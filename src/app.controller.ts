@@ -28,12 +28,14 @@ export class AppController {
   }
 
   @Delete('ingridients/:id')
-  async deleteIngridient(@Param('id') id: number) {}
+  async deleteIngridient(@Param('id') id: number): Promise<string> {
+    return await this.service.deleteIngridient(id);
+  }
 
-  @EventPattern('recipe.delete')
-  async handleDeleteRecipe(
+  @EventPattern('recipe.deleted')
+  async handleRecipeDeleted(
     @Payload() message: HandleDeleteRecipePayload,
   ): Promise<void> {
-    return await this.service.handleDeleteRecipe(Number(message.recipe_id));
+    return await this.service.handleRecipeDeleted(Number(message.recipe_id));
   }
 }

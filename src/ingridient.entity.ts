@@ -1,5 +1,4 @@
-import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
-import { IngridientRecipe } from './ingridients-nutritions.entity';
+import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity('ingridients')
 export class Ingridient {
@@ -12,13 +11,4 @@ export class Ingridient {
     nullable: true,
   })
   name: string;
-
-  @OneToMany(
-    () => IngridientRecipe,
-    (ingridientRecipe) => ingridientRecipe.ingridient.id,
-    {
-      onDelete: 'CASCADE',
-    },
-  )
-  private ingridientsRecipes: IngridientRecipe[];
 }

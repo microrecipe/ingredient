@@ -180,8 +180,32 @@ export class AppService implements OnModuleInit {
     };
   }
 
-  async handleDeleteRecipe(recipeId: number): Promise<void> {
-    this.logger.log('recipe.delete received');
+  async deleteIngridient(id: number): Promise<string> {
+    const ingridient = await this.ingridientsRepository.findOne({
+      where: {
+        id,
+      },
+    });
+
+    if (!ingridient) {
+      throw new NotFoundException('Ingridient not found');
+    }
+
+    await this.ingridientsRepository.remove(ingridient);
+
+    this.ingridientDeleteTopic
+      .emit('ingridient.deleted', {
+        ingridient_id: id,
+      })
+      .forEach(() => {
+        this.logger.log('ingridient.deleted event emitted');
+      });
+
+    return 'Ingridient deleted';
+  }
+
+  async handleRecipeDeleted(recipeId: number): Promise<void> {
+    this.logger.log('recipe.deleted received');
 
     const ingridientsRecipes = await this.ingridientsRecipesRepository.find({
       where: {

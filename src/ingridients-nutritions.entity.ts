@@ -29,6 +29,7 @@ export class IngridientRecipe {
   @ManyToOne(() => Ingridient, {
     nullable: true,
     eager: true,
+    onDelete: 'CASCADE',
   })
   @JoinColumn({ referencedColumnName: 'id', name: 'ingridient_id' })
   ingridient: Ingridient;
