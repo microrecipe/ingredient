@@ -31,7 +31,8 @@ async function bootstrap() {
     transport: Transport.KAFKA,
     options: {
       client: {
-        brokers: ['broker:29092'],
+        clientId: 'microrecipe',
+        brokers: process.env.KAFKA_BROKERS.split(','),
       },
       consumer: {
         groupId: 'ingridient',
