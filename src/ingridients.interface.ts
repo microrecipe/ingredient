@@ -10,9 +10,10 @@ export interface INutrition {
 export interface IIngridient {
   id?: number;
   name?: string;
-  portion?: string;
+  quantity?: number;
   nutritions?: INutrition[];
   recipeId?: number;
+  unit?: string;
 }
 
 export interface IIRecipe {
@@ -31,19 +32,20 @@ export interface IngridientsList {
 
 export interface AddIngridient {
   name: string;
+  unit: string;
   nutritions: SetNutrition[];
 }
 
 export interface SetIngridient {
   id: number;
-  portion: string;
+  quantity: number;
   recipeId: number;
 }
 
 export interface SetIngridientRes {
   id: number;
   name: string;
-  portion: string;
+  quantity: number;
   nutritions: INutrition[];
 }
 
@@ -81,4 +83,10 @@ export interface NutritionsService {
 
 export interface HandleDeleteRecipePayload {
   recipe_id: string;
+}
+
+export interface UserType {
+  id: number;
+  name: string;
+  email: string;
 }

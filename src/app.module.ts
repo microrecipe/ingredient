@@ -9,6 +9,7 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { Ingridient } from './ingridient.entity';
 import { IngridientRecipe } from './ingridients-nutritions.entity';
+import { JwtStrategy } from './jwt.strategy';
 import { ClientPackageNames } from './package-names.enum';
 
 @Module({
@@ -64,6 +65,6 @@ import { ClientPackageNames } from './package-names.enum';
     TypeOrmModule.forFeature([Ingridient, IngridientRecipe]),
   ],
   controllers: [AppController, GrpcController],
-  providers: [AppService],
+  providers: [AppService, JwtStrategy],
 })
 export class AppModule {}

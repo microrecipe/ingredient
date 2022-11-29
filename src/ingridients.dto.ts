@@ -1,3 +1,5 @@
+import { Expose } from 'class-transformer';
+import { IsString } from 'class-validator';
 import { IIngridient, INutrition } from './ingridients.interface';
 
 export class NutritionsDTO {
@@ -6,14 +8,16 @@ export class NutritionsDTO {
 
     res.id = nutrition.id;
     res.name = nutrition.name;
-    res.per_gram = nutrition.perGram;
+    res.perGram = nutrition.perGram;
 
     return res;
   }
 
   id: number;
   name: string;
-  per_gram: string;
+
+  @Expose({ name: 'per_gram' })
+  perGram: string;
 }
 
 export class NutritionBody {
@@ -22,7 +26,12 @@ export class NutritionBody {
 }
 
 export class AddIngridientBody {
+  @IsString()
   name: string;
+
+  @IsString()
+  unit: string;
+
   nutritions: NutritionBody[];
 }
 
@@ -32,6 +41,7 @@ export class IngridientsDTO {
 
     res.id = ingridient.id;
     res.name = ingridient.name;
+    res.unit = ingridient.unit;
     res.nutritions = ingridient.nutritions
       ? ingridient.nutritions.map((nutrition) => NutritionsDTO.toDTO(nutrition))
       : [];
@@ -41,5 +51,6 @@ export class IngridientsDTO {
 
   id: number;
   name: string;
+  unit: string;
   nutritions: NutritionsDTO[];
 }

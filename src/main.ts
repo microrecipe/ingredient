@@ -1,4 +1,5 @@
 import { Logger } from '@nestjs/common';
+import { ValidationPipe } from '@nestjs/common/pipes';
 import { NestFactory } from '@nestjs/core';
 import { GrpcOptions, KafkaOptions, TcpOptions } from '@nestjs/microservices';
 import { Transport } from '@nestjs/microservices/enums';
@@ -9,6 +10,8 @@ async function bootstrap() {
   const logger = new Logger('Bootstrap');
 
   const app = await NestFactory.create(AppModule);
+
+  app.useGlobalPipes(new ValidationPipe({ transform: true }));
 
   app.connectMicroservice<GrpcOptions>({
     transport: Transport.GRPC,

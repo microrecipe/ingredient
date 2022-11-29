@@ -1,11 +1,25 @@
-import { Controller, Get, Body, Post } from '@nestjs/common';
-import { Delete, Param } from '@nestjs/common/decorators';
+import {
+  Controller,
+  Get,
+  Body,
+  Post,
+  ClassSerializerInterceptor,
+} from '@nestjs/common';
+import {
+  Delete,
+  Param,
+  UseGuards,
+  UseInterceptors,
+} from '@nestjs/common/decorators';
 import { EventPattern, Payload } from '@nestjs/microservices';
 import { AppService } from './app.service';
+import { UserPayload } from './auth.decorator';
+import { JwtAuthGuard } from './auth.guard';
 import { AddIngridientBody, IngridientsDTO } from './ingridients.dto';
-import { HandleDeleteRecipePayload } from './ingridients.interface';
+import { HandleDeleteRecipePayload, UserType } from './ingridients.interface';
 
 @Controller()
+@UseInterceptors(ClassSerializerInterceptor)
 export class AppController {
   constructor(private readonly service: AppService) {}
 
@@ -15,16 +29,22 @@ export class AppController {
   }
 
   @Post('ingridients')
+  @UseGuards(JwtAuthGuard)
   async addIngridient(
     @Body() body: AddIngridientBody,
+    @UserPayload() user: UserType,
   ): Promise<IngridientsDTO> {
-    return await this.service.addIngridient({
-      name: body.name,
-      nutritions: body.nutritions.map((nutrition) => ({
-        id: nutrition.id,
-        perGram: nutrition.per_gram,
-      })),
-    });
+    return await this.service.addIngridient(
+      {
+        name: body.name,
+        unit: body.unit,
+        nutritions: body.nutritions.map((nutrition) => ({
+          id: nutrition.id,
+          perGram: nutrition.per_gram,
+        })),
+      },
+      user,
+    );
   }
 
   @Delete('ingridients/:id')

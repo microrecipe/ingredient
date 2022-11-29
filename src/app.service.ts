@@ -14,6 +14,7 @@ import {
   NutritionsService,
   SetIngridient,
   SetIngridientRes,
+  UserType,
 } from './ingridients.interface';
 import { ClientPackageNames } from './package-names.enum';
 
@@ -70,10 +71,10 @@ export class AppService implements OnModuleInit {
           ingridientsList.push({
             ...ingridient,
             recipeId,
-            portion: ingridientsRecipes.find(
+            quantity: ingridientsRecipes.find(
               (ingridientRecipe) =>
                 ingridient.id === ingridientRecipe.ingridient.id,
-            ).portion,
+            ).quantity,
             nutritions: value.nutritions,
           });
         });
@@ -102,7 +103,10 @@ export class AppService implements OnModuleInit {
     );
   }
 
-  async addIngridient(data: AddIngridient): Promise<IngridientsDTO> {
+  async addIngridient(
+    data: AddIngridient,
+    user: UserType,
+  ): Promise<IngridientsDTO> {
     for (const nutrition of data.nutritions) {
       await this.nutritionsService
         .getNutritionById({ id: nutrition.id })
@@ -113,11 +117,13 @@ export class AppService implements OnModuleInit {
         });
     }
 
-    const ingridient = this.ingridientsRepository.create({
-      name: data.name,
-    });
-
-    await this.ingridientsRepository.save(ingridient);
+    const ingridient = await this.ingridientsRepository.save(
+      this.ingridientsRepository.create({
+        name: data.name,
+        unit: data.unit,
+        userId: user.id,
+      }),
+    );
 
     const _nutritions: INutrition[] = [];
 
@@ -156,7 +162,7 @@ export class AppService implements OnModuleInit {
     }
 
     const ingridientRecipe = this.ingridientsRecipesRepository.create({
-      portion: data.portion,
+      quantity: data.quantity,
       recipeId: data.recipeId,
       ingridient,
     });
@@ -175,7 +181,7 @@ export class AppService implements OnModuleInit {
 
     return {
       ...ingridient,
-      portion: data.portion,
+      quantity: data.quantity,
       nutritions,
     };
   }
