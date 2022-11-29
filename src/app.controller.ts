@@ -48,8 +48,12 @@ export class AppController {
   }
 
   @Delete('ingridients/:id')
-  async deleteIngridient(@Param('id') id: number): Promise<string> {
-    return await this.service.deleteIngridient(id);
+  @UseGuards(JwtAuthGuard)
+  async deleteIngridient(
+    @Param('id') id: number,
+    @UserPayload() user: UserType,
+  ): Promise<string> {
+    return await this.service.deleteIngridient(id, user);
   }
 
   @EventPattern('recipe.deleted')

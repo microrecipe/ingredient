@@ -4,7 +4,7 @@ import { TokenExpiredError } from 'jsonwebtoken';
 
 @Injectable()
 export class JwtAuthGuard extends AuthGuard('JwtStrategy') {
-  handleRequest(err: any, user: any, info: any) {
+  handleRequest(err: any, user: any, info: any): any {
     if (info instanceof TokenExpiredError) {
       throw new HttpException(
         {
@@ -20,6 +20,16 @@ export class JwtAuthGuard extends AuthGuard('JwtStrategy') {
         {
           code: 401,
           message: 'Invalid token',
+        },
+        HttpStatus.UNAUTHORIZED,
+      );
+    }
+
+    if (!user.isAdmin) {
+      throw new HttpException(
+        {
+          code: 401,
+          message: 'Not allowed',
         },
         HttpStatus.UNAUTHORIZED,
       );

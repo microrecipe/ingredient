@@ -100,10 +100,11 @@ export class AppService implements OnModuleInit {
     return IngridientsDTO.toDTO({ ...ingridient, nutritions: _nutritions });
   }
 
-  async deleteIngridient(id: number): Promise<string> {
+  async deleteIngridient(id: number, user: UserType): Promise<string> {
     const ingridient = await this.ingridientsRepository.findOne({
       where: {
         id,
+        userId: user.id,
       },
     });
 
