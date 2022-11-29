@@ -11,23 +11,13 @@ export interface IIngridient {
   id?: number;
   name?: string;
   quantity?: number;
+  unit?: string;
   nutritions?: INutrition[];
   recipeId?: number;
-  unit?: string;
-}
-
-export interface IIRecipe {
-  id?: number;
-  name?: string;
-  ingridients?: IIngridient[];
 }
 
 export interface IngridientId {
   id: number;
-}
-
-export interface IngridientsList {
-  ingridients: IIngridient[];
 }
 
 export interface AddIngridient {
@@ -46,6 +36,7 @@ export interface SetIngridientRes {
   id: number;
   name: string;
   quantity: number;
+  unit: string;
   nutritions: INutrition[];
 }
 

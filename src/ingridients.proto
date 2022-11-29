@@ -26,21 +26,24 @@ message Nutrition {
 message Ingridient {
   int32 id = 1;
   string name = 2;
-  string portion = 3;
-  repeated Nutrition nutritions = 4;
+  int32 quantity = 3;
+  string unit = 4;
+  repeated Nutrition nutritions = 5;
+  int32 recipe_id = 6;
 }
 
 message SetIngridient {
   int32 id = 1;
-  string portion = 2;
+  int32 quantity = 2;
   int32 recipe_id = 3;
 }
 
 message SetIngridientRes {
   int32 id = 1;
   string name = 2;
-  string portion = 3;
-  repeated Nutrition nutritions = 4;
+  int32 quantity = 3;
+  string unit = 4;
+  repeated Nutrition nutritions = 5;
 }
 
 message ListIngridientsRes {

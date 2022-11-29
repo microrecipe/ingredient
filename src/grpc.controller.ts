@@ -1,6 +1,6 @@
 import { Controller } from '@nestjs/common';
 import { GrpcMethod } from '@nestjs/microservices';
-import { AppService } from './app.service';
+import { GrpcService } from './grpc.service';
 import {
   IIngridient,
   IngridientId,
@@ -12,7 +12,7 @@ import {
 
 @Controller()
 export class GrpcController {
-  constructor(private readonly service: AppService) {}
+  constructor(private readonly service: GrpcService) {}
 
   @GrpcMethod('IngridientsService')
   async listIngridientsByRecipeId(

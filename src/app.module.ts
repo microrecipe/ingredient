@@ -4,13 +4,14 @@ import { Transport } from '@nestjs/microservices/enums';
 import { ClientsModule } from '@nestjs/microservices/module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { join } from 'path';
-import { GrpcController } from './app-grpc.controller';
+import { GrpcController } from './grpc.controller';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { Ingridient } from './ingridient.entity';
 import { IngridientRecipe } from './ingridients-nutritions.entity';
 import { JwtStrategy } from './jwt.strategy';
 import { ClientPackageNames } from './package-names.enum';
+import { GrpcService } from './grpc.service';
 
 @Module({
   imports: [
@@ -65,6 +66,6 @@ import { ClientPackageNames } from './package-names.enum';
     TypeOrmModule.forFeature([Ingridient, IngridientRecipe]),
   ],
   controllers: [AppController, GrpcController],
-  providers: [AppService, JwtStrategy],
+  providers: [AppService, JwtStrategy, GrpcService],
 })
 export class AppModule {}
