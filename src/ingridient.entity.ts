@@ -11,4 +11,18 @@ export class Ingridient {
     nullable: true,
   })
   name: string;
+
+  @Column({
+    name: 'unit',
+    type: 'varchar',
+    nullable: true,
+  })
+  unit: string;
+
+  @Column({
+    name: 'user_id',
+    type: 'int',
+    nullable: true,
+  })
+  userId: number;
 }
