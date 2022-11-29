@@ -13,11 +13,11 @@ export class IngridientRecipe {
   id: number;
 
   @Column({
-    name: 'portion',
-    type: 'varchar',
+    name: 'quantity',
+    type: 'int',
     nullable: true,
   })
-  portion: string;
+  quantity: number;
 
   @Column({
     name: 'recipe_id',
