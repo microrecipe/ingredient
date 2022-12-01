@@ -25,4 +25,11 @@ export class Ingridient {
     nullable: true,
   })
   userId: number;
+
+  @Column({
+    name: 'price',
+    type: 'float',
+    nullable: true,
+  })
+  price: number;
 }

@@ -80,6 +80,7 @@ export class AppService implements OnModuleInit {
         name: data.name,
         unit: data.unit,
         userId: user.id,
+        price: data.price,
       }),
     );
 

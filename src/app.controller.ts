@@ -38,6 +38,7 @@ export class AppController {
       {
         name: body.name,
         unit: body.unit,
+        price: body.price,
         nutritions: body.nutritions.map((nutrition) => ({
           id: nutrition.id,
           perGram: nutrition.per_gram,

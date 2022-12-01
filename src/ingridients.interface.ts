@@ -12,6 +12,7 @@ export interface IIngridient {
   name?: string;
   quantity?: number;
   unit?: string;
+  price?: number;
   nutritions?: INutrition[];
   recipeId?: number;
 }
@@ -23,6 +24,7 @@ export interface IngridientId {
 export interface AddIngridient {
   name: string;
   unit: string;
+  price: number;
   nutritions: SetNutrition[];
 }
 

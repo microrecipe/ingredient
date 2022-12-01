@@ -1,5 +1,5 @@
 import { Expose } from 'class-transformer';
-import { IsString } from 'class-validator';
+import { IsNumber, IsString } from 'class-validator';
 import { IIngridient, INutrition } from './ingridients.interface';
 
 export class NutritionsDTO {
@@ -32,6 +32,9 @@ export class AddIngridientBody {
   @IsString()
   unit: string;
 
+  @IsNumber()
+  price: number;
+
   nutritions: NutritionBody[];
 }
 
@@ -42,6 +45,7 @@ export class IngridientsDTO {
     res.id = ingridient.id;
     res.name = ingridient.name;
     res.unit = ingridient.unit;
+    res.price = ingridient.price;
     res.nutritions = ingridient.nutritions
       ? ingridient.nutritions.map((nutrition) => NutritionsDTO.toDTO(nutrition))
       : [];
@@ -53,4 +57,5 @@ export class IngridientsDTO {
   name: string;
   unit: string;
   nutritions: NutritionsDTO[];
+  price: number;
 }
