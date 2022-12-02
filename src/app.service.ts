@@ -4,34 +4,34 @@ import { OnModuleInit } from '@nestjs/common/interfaces/hooks';
 import { ClientGrpc, ClientKafka, ClientProxy } from '@nestjs/microservices';
 import { InjectRepository } from '@nestjs/typeorm/dist';
 import { Repository } from 'typeorm';
-import { Ingridient } from './ingridient.entity';
-import { IngridientRecipe } from './ingridients-nutritions.entity';
-import { IngridientsDTO } from './ingridients.dto';
+import { Ingredient } from './ingredient.entity';
+import { IngredientRecipe } from './ingredients-nutritions.entity';
+import { IngredientsDTO } from './ingredients.dto';
 import {
-  AddIngridient,
-  IIngridient,
+  AddIngredient,
+  IIngredient,
   INutrition,
   NutritionsService,
   UserType,
-} from './ingridients.interface';
+} from './ingredients.interface';
 import { ClientPackageNames } from './package-names.enum';
 
 @Injectable()
 export class AppService implements OnModuleInit {
   private nutritionsService: NutritionsService;
-  private logger = new Logger('IngridientsService');
+  private logger = new Logger('IngredientsService');
 
   constructor(
     @Inject(ClientPackageNames.nutritionGRPC)
     private nutritionGrpcClient: ClientGrpc,
     @Inject(ClientPackageNames.nutritionTCP)
     private nutritionTcpClient: ClientProxy,
-    @Inject(ClientPackageNames.ingridientDeleteTopic)
-    private ingridientDeleteTopic: ClientKafka,
-    @InjectRepository(Ingridient)
-    private ingridientsRepository: Repository<Ingridient>,
-    @InjectRepository(IngridientRecipe)
-    private ingridientsRecipesRepository: Repository<IngridientRecipe>,
+    @Inject(ClientPackageNames.ingredientDeleteTopic)
+    private ingredientDeleteTopic: ClientKafka,
+    @InjectRepository(Ingredient)
+    private ingredientsRepository: Repository<Ingredient>,
+    @InjectRepository(IngredientRecipe)
+    private ingredientsRecipesRepository: Repository<IngredientRecipe>,
   ) {}
 
   onModuleInit() {
@@ -41,30 +41,30 @@ export class AppService implements OnModuleInit {
       );
   }
 
-  async listIngridients(): Promise<IngridientsDTO[]> {
-    const ingridients = await this.ingridientsRepository.find();
+  async listIngredients(): Promise<IngredientsDTO[]> {
+    const ingredients = await this.ingredientsRepository.find();
 
-    const ingridientsList: IIngridient[] = [];
+    const ingredientsList: IIngredient[] = [];
 
-    for (const ingridient of ingridients) {
+    for (const ingredient of ingredients) {
       await this.nutritionsService
-        .listNutritionsByIngridientId({
-          id: ingridient.id,
+        .listNutritionsByIngredientId({
+          id: ingredient.id,
         })
         .forEach((value) => {
-          ingridientsList.push({ ...ingridient, nutritions: value.nutritions });
+          ingredientsList.push({ ...ingredient, nutritions: value.nutritions });
         });
     }
 
-    return ingridientsList.map((ingridient) =>
-      IngridientsDTO.toDTO(ingridient),
+    return ingredientsList.map((ingredient) =>
+      IngredientsDTO.toDTO(ingredient),
     );
   }
 
-  async addIngridient(
-    data: AddIngridient,
+  async addIngredient(
+    data: AddIngredient,
     user: UserType,
-  ): Promise<IngridientsDTO> {
+  ): Promise<IngredientsDTO> {
     for (const nutrition of data.nutritions) {
       await this.nutritionsService
         .getNutritionById({ id: nutrition.id })
@@ -75,8 +75,8 @@ export class AppService implements OnModuleInit {
         });
     }
 
-    const ingridient = await this.ingridientsRepository.save(
-      this.ingridientsRepository.create({
+    const ingredient = await this.ingredientsRepository.save(
+      this.ingredientsRepository.create({
         name: data.name,
         unit: data.unit,
         userId: user.id,
@@ -88,56 +88,56 @@ export class AppService implements OnModuleInit {
 
     for (const nutrition of data.nutritions) {
       await this.nutritionsService
-        .setNutritionToIngridient({
+        .setNutritionToIngredient({
           id: nutrition.id,
           perGram: nutrition.perGram,
-          ingridientId: ingridient.id,
+          ingredientId: ingredient.id,
         })
         .forEach((val) => {
           _nutritions.push(val);
         });
     }
 
-    return IngridientsDTO.toDTO({ ...ingridient, nutritions: _nutritions });
+    return IngredientsDTO.toDTO({ ...ingredient, nutritions: _nutritions });
   }
 
-  async deleteIngridient(id: number, user: UserType): Promise<string> {
-    const ingridient = await this.ingridientsRepository.findOne({
+  async deleteIngredient(id: number, user: UserType): Promise<string> {
+    const ingredient = await this.ingredientsRepository.findOne({
       where: {
         id,
         userId: user.id,
       },
     });
 
-    if (!ingridient) {
-      throw new NotFoundException('Ingridient not found');
+    if (!ingredient) {
+      throw new NotFoundException('Ingredient not found');
     }
 
-    await this.ingridientsRepository.remove(ingridient);
+    await this.ingredientsRepository.remove(ingredient);
 
-    this.ingridientDeleteTopic
-      .emit('ingridient.deleted', {
-        ingridient_id: id,
+    this.ingredientDeleteTopic
+      .emit('ingredient.deleted', {
+        ingredient_id: id,
       })
       .forEach(() => {
-        this.logger.log('ingridient.deleted event emitted');
+        this.logger.log('ingredient.deleted event emitted');
       });
 
-    return 'Ingridient deleted';
+    return 'Ingredient deleted';
   }
 
   async handleRecipeDeleted(recipeId: number): Promise<void> {
     this.logger.log('recipe.deleted received');
 
-    const ingridientsRecipes = await this.ingridientsRecipesRepository.find({
+    const ingredientsRecipes = await this.ingredientsRecipesRepository.find({
       where: {
         recipeId,
       },
     });
 
-    await this.ingridientsRecipesRepository.remove(ingridientsRecipes);
+    await this.ingredientsRecipesRepository.remove(ingredientsRecipes);
 
-    this.logger.log('ingridients_recipe deleted');
+    this.logger.log('ingredients_recipe deleted');
 
     return;
   }

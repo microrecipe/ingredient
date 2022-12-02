@@ -2,36 +2,36 @@ import { Controller } from '@nestjs/common';
 import { GrpcMethod } from '@nestjs/microservices';
 import { GrpcService } from './grpc.service';
 import {
-  IIngridient,
-  IngridientId,
-  ListIngridientsRes,
+  IIngredient,
+  IngredientId,
+  ListIngredientsRes,
   RecipeId,
-  SetIngridient,
-  SetIngridientRes,
-} from './ingridients.interface';
+  SetIngredient,
+  SetIngredientRes,
+} from './ingredients.interface';
 
 @Controller()
 export class GrpcController {
   constructor(private readonly service: GrpcService) {}
 
-  @GrpcMethod('IngridientsService')
-  async listIngridientsByRecipeId(
+  @GrpcMethod('IngredientsService')
+  async listIngredientsByRecipeId(
     recipe: RecipeId,
-  ): Promise<ListIngridientsRes> {
+  ): Promise<ListIngredientsRes> {
     return {
-      ingridients: await this.service.listIngridientsByRecipeId(recipe.id),
+      ingredients: await this.service.listIngredientsByRecipeId(recipe.id),
     };
   }
 
-  @GrpcMethod('IngridientsService')
-  async getIngridientById(ingridientId: IngridientId): Promise<IIngridient> {
-    return await this.service.getIngridientById(ingridientId.id);
+  @GrpcMethod('IngredientsService')
+  async getIngredientById(ingredientId: IngredientId): Promise<IIngredient> {
+    return await this.service.getIngredientById(ingredientId.id);
   }
 
-  @GrpcMethod('IngridientsService')
-  async setIngridientToRecipe(
-    setIngridient: SetIngridient,
-  ): Promise<SetIngridientRes> {
-    return await this.service.setIngridientToRecipe(setIngridient);
+  @GrpcMethod('IngredientsService')
+  async setIngredientToRecipe(
+    setIngredient: SetIngredient,
+  ): Promise<SetIngredientRes> {
+    return await this.service.setIngredientToRecipe(setIngredient);
   }
 }

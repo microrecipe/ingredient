@@ -15,26 +15,26 @@ import { EventPattern, Payload } from '@nestjs/microservices';
 import { AppService } from './app.service';
 import { UserPayload } from './auth.decorator';
 import { JwtAuthGuard } from './auth.guard';
-import { AddIngridientBody, IngridientsDTO } from './ingridients.dto';
-import { HandleDeleteRecipePayload, UserType } from './ingridients.interface';
+import { AddIngredientBody, IngredientsDTO } from './ingredients.dto';
+import { HandleDeleteRecipePayload, UserType } from './ingredients.interface';
 
-@Controller()
+@Controller('ingredients')
 @UseInterceptors(ClassSerializerInterceptor)
 export class AppController {
   constructor(private readonly service: AppService) {}
 
-  @Get('ingridients')
-  async listIngridients(): Promise<IngridientsDTO[]> {
-    return await this.service.listIngridients();
+  @Get()
+  async listIngredients(): Promise<IngredientsDTO[]> {
+    return await this.service.listIngredients();
   }
 
-  @Post('ingridients')
+  @Post()
   @UseGuards(JwtAuthGuard)
-  async addIngridient(
-    @Body() body: AddIngridientBody,
+  async addIngredient(
+    @Body() body: AddIngredientBody,
     @UserPayload() user: UserType,
-  ): Promise<IngridientsDTO> {
-    return await this.service.addIngridient(
+  ): Promise<IngredientsDTO> {
+    return await this.service.addIngredient(
       {
         name: body.name,
         unit: body.unit,
@@ -48,13 +48,13 @@ export class AppController {
     );
   }
 
-  @Delete('ingridients/:id')
+  @Delete(':id')
   @UseGuards(JwtAuthGuard)
-  async deleteIngridient(
+  async deleteIngredient(
     @Param('id') id: number,
     @UserPayload() user: UserType,
   ): Promise<string> {
-    return await this.service.deleteIngridient(id, user);
+    return await this.service.deleteIngredient(id, user);
   }
 
   @EventPattern('recipe.deleted')

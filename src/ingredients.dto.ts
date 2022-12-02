@@ -1,6 +1,6 @@
 import { Expose } from 'class-transformer';
 import { IsNumber, IsString } from 'class-validator';
-import { IIngridient, INutrition } from './ingridients.interface';
+import { IIngredient, INutrition } from './ingredients.interface';
 
 export class NutritionsDTO {
   static toDTO(nutrition: INutrition) {
@@ -25,7 +25,7 @@ export class NutritionBody {
   per_gram: string;
 }
 
-export class AddIngridientBody {
+export class AddIngredientBody {
   @IsString()
   name: string;
 
@@ -38,16 +38,16 @@ export class AddIngridientBody {
   nutritions: NutritionBody[];
 }
 
-export class IngridientsDTO {
-  static toDTO(ingridient: IIngridient) {
-    const res = new IngridientsDTO();
+export class IngredientsDTO {
+  static toDTO(ingredient: IIngredient) {
+    const res = new IngredientsDTO();
 
-    res.id = ingridient.id;
-    res.name = ingridient.name;
-    res.unit = ingridient.unit;
-    res.price = ingridient.price;
-    res.nutritions = ingridient.nutritions
-      ? ingridient.nutritions.map((nutrition) => NutritionsDTO.toDTO(nutrition))
+    res.id = ingredient.id;
+    res.name = ingredient.name;
+    res.unit = ingredient.unit;
+    res.price = ingredient.price;
+    res.nutritions = ingredient.nutritions
+      ? ingredient.nutritions.map((nutrition) => NutritionsDTO.toDTO(nutrition))
       : [];
 
     return res;

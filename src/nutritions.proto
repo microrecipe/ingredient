@@ -3,12 +3,12 @@ syntax = "proto3";
 package nutritions;
 
 service NutritionsService {
-  rpc ListNutritionsByIngridientId (IngridientId) returns (ListNutritions) {}
-  rpc SetNutritionToIngridient (SetNutrition) returns (Nutrition) {}
+  rpc ListNutritionsByIngredientId (IngredientId) returns (ListNutritions) {}
+  rpc SetNutritionToIngredient (SetNutrition) returns (Nutrition) {}
   rpc GetNutritionById (NutritionId) returns (Nutrition) {}
 }
 
-message IngridientId {
+message IngredientId {
   int32 id = 1;
 }
 
@@ -16,7 +16,7 @@ message Nutrition {
   int32 id = 1;
   string name = 2;
   string per_gram = 3;
-  int32 ingridient_id = 4;
+  int32 ingredient_id = 4;
 }
 
 message ListNutritions {
@@ -30,5 +30,5 @@ message NutritionId {
 message SetNutrition {
   int32 id = 1;
   string per_gram = 2;
-  int32 ingridient_id = 3;
+  int32 ingredient_id = 3;
 }

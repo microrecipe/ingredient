@@ -5,10 +5,10 @@ import {
   ManyToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
-import { Ingridient } from './ingridient.entity';
+import { Ingredient } from './ingredient.entity';
 
-@Entity('ingridients_recipes')
-export class IngridientRecipe {
+@Entity('ingredients_recipes')
+export class IngredientRecipe {
   @PrimaryGeneratedColumn('increment')
   id: number;
 
@@ -26,11 +26,11 @@ export class IngridientRecipe {
   })
   recipeId: number;
 
-  @ManyToOne(() => Ingridient, {
+  @ManyToOne(() => Ingredient, {
     nullable: true,
     eager: true,
     onDelete: 'CASCADE',
   })
-  @JoinColumn({ referencedColumnName: 'id', name: 'ingridient_id' })
-  ingridient: Ingridient;
+  @JoinColumn({ referencedColumnName: 'id', name: 'ingredient_id' })
+  ingredient: Ingredient;
 }

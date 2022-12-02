@@ -16,9 +16,9 @@ async function bootstrap() {
   app.connectMicroservice<GrpcOptions>({
     transport: Transport.GRPC,
     options: {
-      package: 'ingridients',
-      protoPath: join(__dirname, '../src/ingridients.proto'),
-      url: `0.0.0.0:${process.env.INGRIDIENT_GRPC_PORT}`,
+      package: 'ingredients',
+      protoPath: join(__dirname, '../src/ingredients.proto'),
+      url: `0.0.0.0:${process.env.INGREDIENT_GRPC_PORT}`,
     },
   });
 
@@ -26,7 +26,7 @@ async function bootstrap() {
     transport: Transport.TCP,
     options: {
       host: '0.0.0.0',
-      port: Number(process.env.INGRIDIENT_TCP_PORT),
+      port: Number(process.env.INGREDIENT_TCP_PORT),
     },
   });
 
@@ -38,7 +38,7 @@ async function bootstrap() {
         brokers: process.env.KAFKA_BROKERS.split(','),
       },
       consumer: {
-        groupId: 'ingridient',
+        groupId: 'ingredient',
       },
     },
   });
@@ -46,15 +46,15 @@ async function bootstrap() {
   await app.startAllMicroservices();
 
   logger.log(
-    `gRPC service running on port: ${process.env.INGRIDIENT_GRPC_PORT}`,
+    `gRPC service running on port: ${process.env.INGREDIENT_GRPC_PORT}`,
   );
 
-  logger.log(`TCP service running on port: ${process.env.INGRIDIENT_TCP_PORT}`);
+  logger.log(`TCP service running on port: ${process.env.INGREDIENT_TCP_PORT}`);
 
-  await app.listen(process.env.INGRIDIENT_REST_PORT);
+  await app.listen(process.env.INGREDIENT_REST_PORT);
 
   logger.log(
-    `HTTP service running on port: ${process.env.INGRIDIENT_REST_PORT}`,
+    `HTTP service running on port: ${process.env.INGREDIENT_REST_PORT}`,
   );
 }
 bootstrap();

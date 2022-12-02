@@ -7,8 +7,8 @@ import { join } from 'path';
 import { GrpcController } from './grpc.controller';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { Ingridient } from './ingridient.entity';
-import { IngridientRecipe } from './ingridients-nutritions.entity';
+import { Ingredient } from './ingredient.entity';
+import { IngredientRecipe } from './ingredients-nutritions.entity';
 import { JwtStrategy } from './jwt.strategy';
 import { ClientPackageNames } from './package-names.enum';
 import { GrpcService } from './grpc.service';
@@ -37,7 +37,7 @@ import { GrpcService } from './grpc.service';
         },
       },
       {
-        name: ClientPackageNames.ingridientDeleteTopic,
+        name: ClientPackageNames.ingredientDeleteTopic,
         transport: Transport.KAFKA,
         options: {
           client: {
@@ -51,11 +51,11 @@ import { GrpcService } from './grpc.service';
       imports: [ConfigModule],
       useFactory: (configService: ConfigService) => ({
         type: 'postgres',
-        host: configService.get('INGRIDIENT_DB_HOST'),
-        port: Number(configService.get('INGRIDIENT_DB_PORT')),
-        username: configService.get('INGRIDIENT_DB_USERNAME'),
-        password: configService.get('INGRIDIENT_DB_PASSWORD'),
-        database: configService.get('INGRIDIENT_DB_NAME'),
+        host: configService.get('INGREDIENT_DB_HOST'),
+        port: Number(configService.get('INGREDIENT_DB_PORT')),
+        username: configService.get('INGREDIENT_DB_USERNAME'),
+        password: configService.get('INGREDIENT_DB_PASSWORD'),
+        database: configService.get('INGREDIENT_DB_NAME'),
         entities: [__dirname + './*.entity{.ts,.js}'],
         autoLoadEntities: true,
         synchronize: true,
@@ -63,7 +63,7 @@ import { GrpcService } from './grpc.service';
       }),
       inject: [ConfigService],
     }),
-    TypeOrmModule.forFeature([Ingridient, IngridientRecipe]),
+    TypeOrmModule.forFeature([Ingredient, IngredientRecipe]),
   ],
   controllers: [AppController, GrpcController],
   providers: [AppService, JwtStrategy, GrpcService],

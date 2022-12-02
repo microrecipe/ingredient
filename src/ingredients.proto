@@ -1,14 +1,14 @@
 syntax = "proto3";
 
-package ingridients;
+package ingredients;
 
-service IngridientsService {
-  rpc ListIngridientsByRecipeId (RecipeId) returns (ListIngridientsRes) {}
-  rpc GetIngridientById (IngridientId) returns (Ingridient) {}
-  rpc SetIngridientToRecipe (SetIngridient) returns (SetIngridientRes) {}
+service IngredientsService {
+  rpc ListIngredientsByRecipeId (RecipeId) returns (ListIngredientsRes) {}
+  rpc GetIngredientById (IngredientId) returns (Ingredient) {}
+  rpc SetIngredientToRecipe (SetIngredient) returns (SetIngredientRes) {}
 }
 
-message IngridientId {
+message IngredientId {
   int32 id = 1;
 }
 
@@ -20,10 +20,10 @@ message Nutrition {
   int32 id = 1;
   string name = 2;
   string per_gram = 3;
-  int32 ingridient_id = 4;
+  int32 ingredient_id = 4;
 }
 
-message Ingridient {
+message Ingredient {
   int32 id = 1;
   string name = 2;
   int32 quantity = 3;
@@ -32,13 +32,13 @@ message Ingridient {
   int32 recipe_id = 6;
 }
 
-message SetIngridient {
+message SetIngredient {
   int32 id = 1;
   int32 quantity = 2;
   int32 recipe_id = 3;
 }
 
-message SetIngridientRes {
+message SetIngredientRes {
   int32 id = 1;
   string name = 2;
   int32 quantity = 3;
@@ -46,6 +46,6 @@ message SetIngridientRes {
   repeated Nutrition nutritions = 5;
 }
 
-message ListIngridientsRes {
-  repeated Ingridient ingridients = 1;
+message ListIngredientsRes {
+  repeated Ingredient Ingredients = 1;
 }

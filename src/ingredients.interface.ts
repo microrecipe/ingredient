@@ -4,10 +4,10 @@ export interface INutrition {
   id?: number;
   name?: string;
   perGram?: string;
-  ingridientId?: number;
+  ingredientId?: number;
 }
 
-export interface IIngridient {
+export interface IIngredient {
   id?: number;
   name?: string;
   quantity?: number;
@@ -17,24 +17,24 @@ export interface IIngridient {
   recipeId?: number;
 }
 
-export interface IngridientId {
+export interface IngredientId {
   id: number;
 }
 
-export interface AddIngridient {
+export interface AddIngredient {
   name: string;
   unit: string;
   price: number;
   nutritions: SetNutrition[];
 }
 
-export interface SetIngridient {
+export interface SetIngredient {
   id: number;
   quantity: number;
   recipeId: number;
 }
 
-export interface SetIngridientRes {
+export interface SetIngredientRes {
   id: number;
   name: string;
   quantity: number;
@@ -49,7 +49,7 @@ export interface NutritionsList {
 export interface SetNutrition {
   id?: number;
   perGram?: string;
-  ingridientId?: number;
+  ingredientId?: number;
 }
 
 export interface GetNutrition {
@@ -60,16 +60,16 @@ export interface RecipeId {
   id: number;
 }
 
-export interface ListIngridientsRes {
-  ingridients: IIngridient[];
+export interface ListIngredientsRes {
+  ingredients: IIngredient[];
 }
 
 export interface NutritionsService {
-  listNutritionsByIngridientId(
-    ingridient: IIngridient,
+  listNutritionsByIngredientId(
+    ingredient: IIngredient,
   ): Observable<NutritionsList>;
 
-  setNutritionToIngridient(nutrition: SetNutrition): Observable<INutrition>;
+  setNutritionToIngredient(nutrition: SetNutrition): Observable<INutrition>;
 
   getNutritionById(nutrition: GetNutrition): Observable<INutrition>;
 }

@@ -8,31 +8,31 @@ import {
 import { ClientGrpc, ClientProxy } from '@nestjs/microservices';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, In } from 'typeorm';
-import { Ingridient } from './ingridient.entity';
-import { IngridientRecipe } from './ingridients-nutritions.entity';
+import { Ingredient } from './ingredient.entity';
+import { IngredientRecipe } from './ingredients-nutritions.entity';
 import {
   NutritionsService,
-  IIngridient,
-  SetIngridient,
-  SetIngridientRes,
+  IIngredient,
+  SetIngredient,
+  SetIngredientRes,
   INutrition,
-} from './ingridients.interface';
+} from './ingredients.interface';
 import { ClientPackageNames } from './package-names.enum';
 
 @Injectable()
 export class GrpcService implements OnModuleInit {
   private nutritionsService: NutritionsService;
-  private logger = new Logger('IngridientsService');
+  private logger = new Logger('IngredientsService');
 
   constructor(
     @Inject(ClientPackageNames.nutritionGRPC)
     private nutritionGrpcClient: ClientGrpc,
     @Inject(ClientPackageNames.nutritionTCP)
     private nutritionTcpClient: ClientProxy,
-    @InjectRepository(Ingridient)
-    private ingridientsRepository: Repository<Ingridient>,
-    @InjectRepository(IngridientRecipe)
-    private ingridientsRecipesRepository: Repository<IngridientRecipe>,
+    @InjectRepository(Ingredient)
+    private ingredientsRepository: Repository<Ingredient>,
+    @InjectRepository(IngredientRecipe)
+    private ingredientsRecipesRepository: Repository<IngredientRecipe>,
   ) {}
 
   onModuleInit() {
@@ -41,88 +41,88 @@ export class GrpcService implements OnModuleInit {
         'NutritionsService',
       );
   }
-  async listIngridientsByRecipeId(recipeId: number): Promise<IIngridient[]> {
-    const ingridientsRecipes = await this.ingridientsRecipesRepository.find({
+  async listIngredientsByRecipeId(recipeId: number): Promise<IIngredient[]> {
+    const ingredientsRecipes = await this.ingredientsRecipesRepository.find({
       where: {
         recipeId,
       },
     });
 
-    const ingridients = await this.ingridientsRepository.find({
+    const ingredients = await this.ingredientsRepository.find({
       where: {
         id: In(
-          ingridientsRecipes.map(
-            (ingridientRecipe) => ingridientRecipe.ingridient?.id,
+          ingredientsRecipes.map(
+            (ingredientRecipe) => ingredientRecipe.ingredient?.id,
           ),
         ),
       },
     });
 
-    const ingridientsList: IIngridient[] = [];
+    const ingredientsList: IIngredient[] = [];
 
-    for (const ingridient of ingridients) {
+    for (const ingredient of ingredients) {
       await this.nutritionsService
-        .listNutritionsByIngridientId({
-          id: ingridient.id,
+        .listNutritionsByIngredientId({
+          id: ingredient.id,
         })
         .forEach((value) => {
-          ingridientsList.push({
-            ...ingridient,
+          ingredientsList.push({
+            ...ingredient,
             recipeId,
-            quantity: ingridientsRecipes.find(
-              (ingridientRecipe) =>
-                ingridient.id === ingridientRecipe.ingridient.id,
+            quantity: ingredientsRecipes.find(
+              (ingredientRecipe) =>
+                ingredient.id === ingredientRecipe.ingredient.id,
             ).quantity,
             nutritions: value.nutritions,
           });
         });
     }
 
-    return ingridientsList;
+    return ingredientsList;
   }
 
-  async getIngridientById(id: number): Promise<IIngridient> {
-    return await this.ingridientsRepository.findOne({
+  async getIngredientById(id: number): Promise<IIngredient> {
+    return await this.ingredientsRepository.findOne({
       where: {
         id,
       },
     });
   }
 
-  async setIngridientToRecipe(data: SetIngridient): Promise<SetIngridientRes> {
-    const ingridient = await this.ingridientsRepository.findOne({
+  async setIngredientToRecipe(data: SetIngredient): Promise<SetIngredientRes> {
+    const ingredient = await this.ingredientsRepository.findOne({
       where: {
         id: data.id,
       },
     });
 
-    if (!ingridient) {
-      throw new NotFoundException('Ingridient not found');
+    if (!ingredient) {
+      throw new NotFoundException('Ingredient not found');
     }
 
-    await this.ingridientsRecipesRepository.save(
-      this.ingridientsRecipesRepository.create({
+    await this.ingredientsRecipesRepository.save(
+      this.ingredientsRecipesRepository.create({
         quantity: data.quantity,
         recipeId: data.recipeId,
-        ingridient,
+        ingredient: ingredient,
       }),
     );
 
     let nutritions: INutrition[];
 
     await this.nutritionsService
-      .listNutritionsByIngridientId({
-        id: ingridient.id,
+      .listNutritionsByIngredientId({
+        id: ingredient.id,
       })
       .forEach((value) => {
         nutritions = value.nutritions;
       });
 
     return {
-      id: ingridient.id,
-      name: ingridient.name,
+      id: ingredient.id,
+      name: ingredient.name,
       quantity: data.quantity,
-      unit: ingridient.unit,
+      unit: ingredient.unit,
       nutritions,
     };
   }
