@@ -28,8 +28,9 @@ message Ingredient {
   string name = 2;
   int32 quantity = 3;
   string unit = 4;
-  repeated Nutrition nutritions = 5;
-  int32 recipe_id = 6;
+  float price = 5;
+  repeated Nutrition nutritions = 6;
+  int32 recipe_id = 7;
 }
 
 message SetIngredient {
@@ -47,5 +48,5 @@ message SetIngredientRes {
 }
 
 message ListIngredientsRes {
-  repeated Ingredient Ingredients = 1;
+  repeated Ingredient ingredients = 1;
 }
