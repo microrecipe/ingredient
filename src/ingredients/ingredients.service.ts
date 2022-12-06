@@ -4,20 +4,20 @@ import { OnModuleInit } from '@nestjs/common/interfaces/hooks';
 import { ClientGrpc, ClientKafka, ClientProxy } from '@nestjs/microservices';
 import { InjectRepository } from '@nestjs/typeorm/dist';
 import { Repository } from 'typeorm';
-import { Ingredient } from './ingredient.entity';
-import { IngredientRecipe } from './ingredients-nutritions.entity';
-import { IngredientsDTO } from './ingredients.dto';
+import { Ingredient } from '../entities/ingredient.entity';
+import { IngredientsDTO } from '../ingredients.dto';
 import {
   AddIngredient,
   IIngredient,
   INutrition,
   NutritionsService,
   UserType,
-} from './ingredients.interface';
-import { ClientPackageNames } from './package-names.enum';
+} from '../ingredients.interface';
+import { ClientPackageNames } from '../ingredients.enum';
+import { IngredientRecipe } from '../entities/ingredient-nutrition.entity';
 
 @Injectable()
-export class AppService implements OnModuleInit {
+export class IngredientsService implements OnModuleInit {
   private nutritionsService: NutritionsService;
   private logger = new Logger('IngredientsService');
 

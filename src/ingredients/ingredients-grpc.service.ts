@@ -8,19 +8,19 @@ import {
 import { ClientGrpc, ClientProxy } from '@nestjs/microservices';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, In } from 'typeorm';
-import { Ingredient } from './ingredient.entity';
-import { IngredientRecipe } from './ingredients-nutritions.entity';
+import { IngredientRecipe } from '../entities/ingredient-nutrition.entity';
+import { Ingredient } from '../entities/ingredient.entity';
+import { ClientPackageNames } from '../ingredients.enum';
 import {
   NutritionsService,
   IIngredient,
   SetIngredient,
   SetIngredientRes,
   INutrition,
-} from './ingredients.interface';
-import { ClientPackageNames } from './package-names.enum';
+} from '../ingredients.interface';
 
 @Injectable()
-export class GrpcService implements OnModuleInit {
+export class IngredientsGrpcService implements OnModuleInit {
   private nutritionsService: NutritionsService;
   private logger = new Logger('IngredientsService');
 

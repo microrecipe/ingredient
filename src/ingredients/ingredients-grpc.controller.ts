@@ -1,18 +1,18 @@
 import { Controller } from '@nestjs/common';
 import { GrpcMethod } from '@nestjs/microservices';
-import { GrpcService } from './grpc.service';
 import {
-  IIngredient,
-  IngredientId,
-  ListIngredientsRes,
   RecipeId,
+  ListIngredientsRes,
+  IngredientId,
+  IIngredient,
   SetIngredient,
   SetIngredientRes,
-} from './ingredients.interface';
+} from '../ingredients.interface';
+import { IngredientsGrpcService } from './ingredients-grpc.service';
 
 @Controller()
-export class GrpcController {
-  constructor(private readonly service: GrpcService) {}
+export class IngredientsGrpcController {
+  constructor(private readonly service: IngredientsGrpcService) {}
 
   @GrpcMethod('IngredientsService')
   async listIngredientsByRecipeId(

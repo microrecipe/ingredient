@@ -17,7 +17,7 @@ async function bootstrap() {
     transport: Transport.GRPC,
     options: {
       package: 'ingredients',
-      protoPath: join(__dirname, '../src/ingredients.proto'),
+      protoPath: join(__dirname, '../src/proto/ingredients.proto'),
       url: `0.0.0.0:${process.env.INGREDIENT_GRPC_PORT}`,
     },
   });

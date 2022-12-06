@@ -4,14 +4,14 @@ import { Transport } from '@nestjs/microservices/enums';
 import { ClientsModule } from '@nestjs/microservices/module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { join } from 'path';
-import { GrpcController } from './grpc.controller';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
-import { Ingredient } from './ingredient.entity';
-import { IngredientRecipe } from './ingredients-nutritions.entity';
-import { JwtStrategy } from './jwt.strategy';
-import { ClientPackageNames } from './package-names.enum';
-import { GrpcService } from './grpc.service';
+import { IngredientsController } from './ingredients/ingredients.controller';
+import { IngredientsService } from './ingredients/ingredients.service';
+import { Ingredient } from './entities/ingredient.entity';
+import { ClientPackageNames } from './ingredients.enum';
+import { JwtStrategy } from './auth/jwt.strategy';
+import { IngredientRecipe } from './entities/ingredient-nutrition.entity';
+import { IngredientsGrpcController } from './ingredients/ingredients-grpc.controller';
+import { IngredientsGrpcService } from './ingredients/ingredients-grpc.service';
 
 @Module({
   imports: [
@@ -24,7 +24,7 @@ import { GrpcService } from './grpc.service';
         transport: Transport.GRPC,
         options: {
           package: 'nutritions',
-          protoPath: join(__dirname, '../src/nutritions.proto'),
+          protoPath: join(__dirname, '../src/proto/nutritions.proto'),
           url: `${process.env.NUTRITION_HOST}:${process.env.NUTRITION_GRPC_PORT}`,
         },
       },
@@ -56,7 +56,7 @@ import { GrpcService } from './grpc.service';
         username: configService.get('INGREDIENT_DB_USERNAME'),
         password: configService.get('INGREDIENT_DB_PASSWORD'),
         database: configService.get('INGREDIENT_DB_NAME'),
-        entities: [__dirname + './*.entity{.ts,.js}'],
+        entities: [__dirname + './entities/*.entity{.ts,.js}'],
         autoLoadEntities: true,
         synchronize: true,
         logging: false,
@@ -65,7 +65,7 @@ import { GrpcService } from './grpc.service';
     }),
     TypeOrmModule.forFeature([Ingredient, IngredientRecipe]),
   ],
-  controllers: [AppController, GrpcController],
-  providers: [AppService, JwtStrategy, GrpcService],
+  controllers: [IngredientsController, IngredientsGrpcController],
+  providers: [IngredientsService, JwtStrategy, IngredientsGrpcService],
 })
 export class AppModule {}
