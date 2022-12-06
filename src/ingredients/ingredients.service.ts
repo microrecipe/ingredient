@@ -129,11 +129,10 @@ export class IngredientsService implements OnModuleInit {
   async handleRecipeDeleted(recipeId: number): Promise<void> {
     this.logger.log('recipe.deleted received');
 
-    const ingredientsRecipes = await this.ingredientsRecipesRepository.find({
-      where: {
+    const ingredientsRecipes =
+      await this.ingredientsRecipesRepository.findOneByOrFail({
         recipeId,
-      },
-    });
+      });
 
     await this.ingredientsRecipesRepository.softRemove(ingredientsRecipes);
 
