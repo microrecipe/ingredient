@@ -1,9 +1,12 @@
 import {
   Column,
+  CreateDateColumn,
+  DeleteDateColumn,
   Entity,
   JoinColumn,
   ManyToOne,
   PrimaryGeneratedColumn,
+  UpdateDateColumn,
 } from 'typeorm';
 import { Ingredient } from './ingredient.entity';
 
@@ -33,4 +36,13 @@ export class IngredientRecipe {
   })
   @JoinColumn({ referencedColumnName: 'id', name: 'ingredient_id' })
   ingredient: Ingredient;
+
+  @CreateDateColumn({ name: 'created_at' })
+  createAt: Date;
+
+  @UpdateDateColumn({ name: 'updated_at' })
+  updatedAt: Date;
+
+  @DeleteDateColumn({ name: 'deleted_at' })
+  deletedAt: Date;
 }

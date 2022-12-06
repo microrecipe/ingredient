@@ -113,7 +113,7 @@ export class IngredientsService implements OnModuleInit {
       throw new NotFoundException('Ingredient not found');
     }
 
-    await this.ingredientsRepository.remove(ingredient);
+    await this.ingredientsRepository.softRemove(ingredient);
 
     this.ingredientDeleteTopic
       .emit('ingredient.deleted', {
@@ -135,7 +135,7 @@ export class IngredientsService implements OnModuleInit {
       },
     });
 
-    await this.ingredientsRecipesRepository.remove(ingredientsRecipes);
+    await this.ingredientsRecipesRepository.softRemove(ingredientsRecipes);
 
     this.logger.log('ingredients_recipe deleted');
 
