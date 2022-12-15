@@ -42,7 +42,11 @@ export class IngredientsService implements OnModuleInit {
   }
 
   async listIngredients(): Promise<IngredientsDTO[]> {
-    const ingredients = await this.ingredientsRepository.find();
+    const ingredients = await this.ingredientsRepository.find({
+      order: {
+        createdAt: 'DESC',
+      },
+    });
 
     const ingredientsList: IIngredient[] = [];
 
