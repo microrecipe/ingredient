@@ -28,6 +28,11 @@ export class IngredientsController {
     return await this.service.listIngredients();
   }
 
+  @Get(':id')
+  async getIngredientById(@Param('id') id: number): Promise<IngredientsDTO> {
+    return await this.service.getIngredientById(id);
+  }
+
   @Post()
   @UseGuards(JwtAuthGuard)
   async addIngredient(

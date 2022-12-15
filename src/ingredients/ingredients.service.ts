@@ -3,7 +3,7 @@ import { NotFoundException } from '@nestjs/common/exceptions';
 import { OnModuleInit } from '@nestjs/common/interfaces/hooks';
 import { ClientGrpc, ClientKafka, ClientProxy } from '@nestjs/microservices';
 import { InjectRepository } from '@nestjs/typeorm/dist';
-import { Repository } from 'typeorm';
+import { EntityNotFoundError, Repository } from 'typeorm';
 import { Ingredient } from '../entities/ingredient.entity';
 import { IngredientsDTO } from '../ingredients.dto';
 import {
@@ -63,6 +63,32 @@ export class IngredientsService implements OnModuleInit {
     return ingredientsList.map((ingredient) =>
       IngredientsDTO.toDTO(ingredient),
     );
+  }
+
+  async getIngredientById(id: number): Promise<IngredientsDTO> {
+    try {
+      const ingredient = await this.ingredientsRepository.findOneByOrFail({
+        id,
+      });
+
+      let _ingredient: IIngredient;
+
+      await this.nutritionsService
+        .listNutritionsByIngredientId({
+          id: ingredient.id,
+        })
+        .forEach((value) => {
+          _ingredient = { ...ingredient, nutritions: value.nutritions };
+        });
+
+      return IngredientsDTO.toDTO(_ingredient);
+    } catch (err) {
+      if (err instanceof EntityNotFoundError) {
+        throw new NotFoundException('Ingredient not found');
+      } else {
+        throw err;
+      }
+    }
   }
 
   async addIngredient(
