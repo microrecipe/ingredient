@@ -6,10 +6,15 @@ service NutritionsService {
   rpc ListNutritionsByIngredientId (IngredientId) returns (ListNutritions) {}
   rpc SetNutritionToIngredient (SetNutrition) returns (Nutrition) {}
   rpc GetNutritionById (NutritionId) returns (Nutrition) {}
+  rpc RemoveNutritionDataForIngredient (IngredientId) returns (Empty) {}
 }
 
 message IngredientId {
   int32 id = 1;
+}
+
+message Empty {
+
 }
 
 message Nutrition {

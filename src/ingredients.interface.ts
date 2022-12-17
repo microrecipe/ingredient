@@ -72,6 +72,8 @@ export interface NutritionsService {
   setNutritionToIngredient(nutrition: SetNutrition): Observable<INutrition>;
 
   getNutritionById(nutrition: GetNutrition): Observable<INutrition>;
+
+  removeNutritionDataForIngredient(ingredient: IIngredient): Observable<void>;
 }
 
 export interface HandleDeleteRecipePayload {

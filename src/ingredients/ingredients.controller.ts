@@ -8,6 +8,7 @@ import {
 import {
   Delete,
   Param,
+  Put,
   UseGuards,
   UseInterceptors,
 } from '@nestjs/common/decorators';
@@ -51,6 +52,16 @@ export class IngredientsController {
       },
       user,
     );
+  }
+
+  @Put(':id')
+  @UseGuards(JwtAuthGuard)
+  async editIngredient(
+    @Param('id') id: number,
+    @Body() body: AddIngredientBody,
+    @UserPayload() user: UserType,
+  ): Promise<IngredientsDTO> {
+    return await this.service.editIngredient(id, body, user);
   }
 
   @Delete(':id')

@@ -131,6 +131,63 @@ export class IngredientsService implements OnModuleInit {
     return IngredientsDTO.toDTO({ ...ingredient, nutritions: _nutritions });
   }
 
+  async editIngredient(
+    id: number,
+    data: AddIngredient,
+    user: UserType,
+  ): Promise<IngredientsDTO> {
+    try {
+      const ingredient = await this.ingredientsRepository.findOneByOrFail({
+        id,
+        userId: user.id,
+      });
+
+      for (const nutrition of data.nutritions) {
+        await this.nutritionsService
+          .getNutritionById({ id: nutrition.id })
+          .forEach((val) => {
+            if (!val) {
+              throw new NotFoundException('Nutrition not found');
+            }
+          });
+      }
+
+      if (ingredient.name !== data.name) ingredient.name = data.name;
+      if (ingredient.price !== data.price) ingredient.price = data.price;
+      if (ingredient.unit !== data.unit) ingredient.unit = data.unit;
+
+      const _nutritions: INutrition[] = [];
+
+      await this.nutritionsService
+        .removeNutritionDataForIngredient({
+          id: ingredient.id,
+        })
+        .forEach((val: unknown) => val);
+
+      for (const nutrition of data.nutritions) {
+        await this.nutritionsService
+          .setNutritionToIngredient({
+            id: nutrition.id,
+            perGram: nutrition.perGram,
+            ingredientId: ingredient.id,
+          })
+          .forEach((val) => {
+            _nutritions.push(val);
+          });
+      }
+
+      await this.ingredientsRepository.save(ingredient);
+
+      return IngredientsDTO.toDTO({ ...ingredient, nutritions: _nutritions });
+    } catch (err) {
+      if (err instanceof EntityNotFoundError) {
+        throw new NotFoundException('Ingredient not found');
+      } else {
+        throw err;
+      }
+    }
+  }
+
   async deleteIngredient(id: number, user: UserType): Promise<string> {
     const ingredient = await this.ingredientsRepository.findOne({
       where: {
